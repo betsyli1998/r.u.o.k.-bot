@@ -172,13 +172,9 @@ class ChatBot:
 
 
 class OxyCSBot(ChatBot):
-    """A simple chatbot that directs students to office hours of CS professors."""
 
     STATES = [
         'waiting',
-        'specific_faculty',
-        'unknown_faculty',
-        'unrecognized_faculty',
         'why_sad',
         'talk_to_professors',
         'other_factors'
@@ -196,20 +192,23 @@ class OxyCSBot(ChatBot):
         'hello':'hi',
         'howdy': 'hi',
         "what's up": 'hi',
+        'hey':'hi',
 
         # sad
         "sad": "sad",
-        'hate': 'sad',
-        'depressed': "sad",
-        'disappointed': "sad",
-        'miss': "sad",
-        'hopeless': "sad",
-        'disinterested': "sad",
-        'empty': 'sad',
-        'life is meaningless': 'sad',
-        'no point in': 'sad',
-        'not good': 'sad',
-        'emotional': 'sad',
+        "hate": "sad",
+        "depressed": "sad",
+        "disappointed": "sad",
+        "miss": "sad",
+        "hopeless": "sad",
+        "disinterested": "sad",
+        "empty": "sad",
+        "life is meaningless": "sad",
+        "no point in": "sad",
+        "not good": "sad",
+        "emotional": "sad",
+        "rough":"sad",
+        "down":"sad",
 
         # anxious
         "future": "anxious",
@@ -222,6 +221,7 @@ class OxyCSBot(ChatBot):
         "life": "anxious",
         "uneasy": "anxious",
         "troubled": "anxious",
+        "anxious":"anxious",
 
         # failing academics
         "test": "failing academics",
@@ -237,6 +237,22 @@ class OxyCSBot(ChatBot):
         "annoyed": "failing academics",
         "efforts": "failing academics",
         "quit school": "failing academics",
+        "not great": "failing academics",
+        "screwed up":"failing academics",
+        "very bad": "failing academics",
+        "really bad": "failing academics",
+        "failing": "failing academics",
+        "failed": "failing academics",
+        "school": "failing academics",
+        "stupid": "failing academics",
+        "fail": "failing academics",
+        "stress": "failing academics",
+        "stressing": "failing academics",
+        "stressful": "failing academics",
+        "stressed": "failing academics",
+        "doubt": "failing academics",
+        "doubtful": "failing academics",
+        "failure": "failing academics",
 
         # social isolation
         "disconnected": "social isolation",
@@ -249,17 +265,10 @@ class OxyCSBot(ChatBot):
         "abandoned": "social isolation",
         "care about me": "social isolation",
         "not cared for": "social isolation",
-        "failing": "social isolation",
-
-        # professors
-        'kathryn': 'kathryn',
-        'leonard': 'kathryn',
-        'justin': 'justin',
-        'li': 'justin',
-        'jeff': 'jeff',
-        'miller': 'jeff',
-        'celia': 'celia',
-        'hsing-hau': 'hsing-hau',
+        "isolated": "social isolation",
+        "socially": "social isolation",
+        "socially awkward": "social isolation",
+        "myself": "social isolation",
 
         # generic
         'thanks': 'thanks',
@@ -283,13 +292,6 @@ class OxyCSBot(ChatBot):
 
     }
 
-    PROFESSORS = [
-        'celia',
-        'hsing-hau',
-        'jeff',
-        'justin',
-        'kathryn',
-    ]
 
     def __init__(self):
         """Initialize the OxyCSBot.
@@ -443,55 +445,12 @@ class OxyCSBot(ChatBot):
             return self.finish('health_resources')
         # FIXME
 
-    # "specific_faculty" state functions
 
-    def on_enter_specific_faculty(self):
-        response = '\n'.join([
-            f"{self.professor.capitalize()}'s office hours are {self.get_office_hours(self.professor)}",
-            'Do you know where their office is?',
-        ])
-        return response
-
-    def respond_from_specific_faculty(self, message, tags):
-        if 'yes' in tags:
-            return self.finish('success')
-        else:
-            return self.finish('location')
-
-    # "unknown_faculty" state functions
-
-    def on_enter_unknown_faculty(self):
-        return "Who's office hours are you looking for?"
-
-    def respond_from_unknown_faculty(self, message, tags):
-        for professor in self.PROFESSORS:
-            if professor in tags:
-                self.professor = professor
-                return self.go_to_state('specific_faculty')
-        return self.go_to_state('unrecognized_faculty')
-
-    # "unrecognized_faculty" state functions
-
-    def on_enter_unrecognized_faculty(self):
-        return ' '.join([
-            "I'm not sure I understand - are you looking for",
-            "Celia, Hsing-hau, Jeff, Justin, or Kathryn?",
-        ])
-
-    def respond_from_unrecognized_faculty(self, message, tags):
-        for professor in self.PROFESSORS:
-            if professor in tags:
-                self.professor = professor
-                return self.go_to_state('specific_faculty')
-        return self.finish('fail')
 
     # "finish" functions
 
     def finish_confused(self):
         return "CONFUSED"
-
-    def finish_location(self):
-        return f"{self.professor.capitalize()}'s office is in {self.get_office(self.professor)}"
 
     def finish_success(self):
         return 'Great, let me know if you need anything else!'
